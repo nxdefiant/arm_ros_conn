@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<robot name="arm">
+	<link name="base_link">
+		<visual>
+			<geometry>
+				<box size="0.23 0.17 0.20"/>
+			</geometry>
+			<origin xyz="0.0 0 0.12" rpy="0 0 0"/>
+			<material name="grey">
+				<color rgba="0.5 0.5 0.5 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="front_left_wheel">
+		<visual>
+			<geometry>
+				<cylinder radius="0.03" length="0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="front_right_wheel">
+		<visual>
+			<geometry>
+				<cylinder radius="0.03" length="0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="aft_left_wheel">
+		<visual>
+			<geometry>
+				<cylinder radius="0.03" length="0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="aft_right_wheel">
+		<visual>
+			<geometry>
+				<cylinder radius="0.03" length="0.005"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="1.57 0 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="platform">
+		<visual>
+			<geometry>
+				<box size="0.08 0.065 0.075"/>
+			</geometry>
+			<material name="red">
+				<color rgba="1 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="scan">
+		<visual>
+			<geometry>
+				<box size="0.01 0.045 0.015"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="front_left_eye">
+		<visual>
+			<geometry>
+				<cylinder radius="0.0075" length="0.01"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 1.57 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="front_right_eye">
+		<visual>
+			<geometry>
+				<cylinder radius="0.0075" length="0.01"/>
+			</geometry>
+			<origin xyz="0 0 0" rpy="0 1.57 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="sonar_forward_lower">
+		<visual>
+			<geometry>
+				<box size="0.01 0.045 0.03"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="front_lower_left_eye">
+		<visual>
+			<geometry>
+				<cylinder radius="0.0075" length="0.01"/>
+			</geometry>
+			<origin xyz="0 0 0.0" rpy="0 1.57 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="front_lower_right_eye">
+		<visual>
+			<geometry>
+				<cylinder radius="0.0075" length="0.01"/>
+			</geometry>
+			<origin xyz="0 0 0.0" rpy="0 1.57 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<link name="antenna">
+		<visual>
+			<geometry>
+				<cylinder radius="0.005" length="0.20"/>
+			</geometry>
+			<origin xyz="0 0 0.1" rpy="0 0 0"/>
+			<material name="black">
+				<color rgba="0 0 0 1"/>
+			</material>
+		</visual>
+	</link>
+
+	<joint name="front_left_wheel_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="front_left_wheel"/>
+		<origin xyz="0.065 0.05 0.03" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="front_right_wheel_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="front_right_wheel"/>
+		<origin xyz="0.065 -0.05 0.03" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="aft_left_wheel_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="aft_left_wheel"/>
+		<origin xyz="-0.08 0.05 0.03" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="aft_right_wheel_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="aft_right_wheel"/>
+		<origin xyz="-0.08 -0.05 0.03" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="platform_joint" type="continuous">
+		<parent link="base_link"/>
+		<child link="platform"/>
+		<origin xyz="-0.04 0 0.26" rpy="0 0 0"/>
+		<axis xyz="0 0 1"/>
+	</joint>
+
+	<joint name="scan_joint" type="fixed">
+		<parent link="platform"/>
+		<child link="scan"/>
+		<origin xyz="0.035 0 0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="front_left_eye_joint" type="fixed">
+		<parent link="scan"/>
+		<child link="front_left_eye"/>
+		<origin xyz="0.01 -0.0125 0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="front_right_eye_joint" type="fixed">
+		<parent link="scan"/>
+		<child link="front_right_eye"/>
+		<origin xyz="0.01 0.0125 0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="sonar_forward_lower_join" type="fixed">
+		<parent link="base_link"/>
+		<child link="sonar_forward_lower"/>
+		<origin xyz="0.105 0.0 0.035" rpy="0 -0.1309 0"/>
+	</joint>
+
+	<joint name="front_lower_left_eye_joint" type="fixed">
+		<parent link="sonar_forward_lower"/>
+		<child link="front_lower_left_eye"/>
+		<origin xyz="0.01 -0.01 0.0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="front_lower_right_eye_joint" type="fixed">
+		<parent link="sonar_forward_lower"/>
+		<child link="front_lower_right_eye"/>
+		<origin xyz="0.01 0.01 0.0" rpy="0 0 0"/>
+	</joint>
+
+	<joint name="antenna_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="antenna"/>
+		<origin xyz="-0.12 0.08 0.14" rpy="0 0 0"/>
+	</joint>
+</robot>
