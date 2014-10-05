@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-	<!--
-	<include file="$(find openni2_launch)/launch/openni2.launch" />
+	<include file="$(find arm)/launch/openni2.launch" />
 
 	<node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
 		<remap from="image" to="/camera/depth/image_raw"/>
 		<remap from="camera_info" to="/camera/depth/camera_info"/>
 		<param name="output_frame_id" value="/scan" />
 	</node>
-	-->
 
 	<param name="robot_description" textfile="$(find arm)/urdf/arm.urdf" />
 
