@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<robot name="arm">
+<robot name="arm" xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:include filename="$(find hector_sensors_description)/urdf/asus_camera.urdf.xacro" />
+
 	<link name="base_link">
 		<visual>
 			<geometry>
@@ -47,6 +49,19 @@
 			</material>
 		</visual>
 	</link>
+
+	<xacro:asus_camera name="camera" parent="base_link">
+		<origin xyz="0.195 0.0 0.165" rpy="0 0 0"/>
+	</xacro:asus_camera>
+
+	<link name="scan">
+	</link>
+
+	<joint name="scan_joint" type="fixed">
+		<parent link="camera_depth_frame"/>
+		<child link="scan"/>
+		<origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+	</joint>
 
 	<joint name="front_wheel_joint" type="fixed">
 		<parent link="base_link"/>
