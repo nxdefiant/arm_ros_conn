@@ -7,7 +7,4 @@
 		<remap from="camera_info" to="/camera/depth/camera_info"/>
 		<param name="output_frame_id" value="/scan" />
 	</node>
-
-	<param name="robot_description" command="$(find xacro)/xacro.py $(find arm)/urdf/arm.urdf.xacro" />
-	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
 </launch>
