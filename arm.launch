@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-	<include file="$(find arm)/launch/openni2.launch" />
+	<include file="$(find openni2_launch)/launch/openni2.launch" />
 
 	<node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen">
 		<remap from="image" to="/camera/depth/image_raw"/>
@@ -8,6 +8,8 @@
 		<param name="output_frame_id" value="/scan" />
 	</node>
 
+	<!--
 	<param name="robot_description" command="$(find xacro)/xacro.py $(find arm)/urdf/arm.urdf.xacro" />
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+-->
 </launch>
