@@ -6,7 +6,7 @@ import tf
 import prctl
 #import cProfile
 import threading
-from json_client import JsonClient
+from pyshared.json_client import JsonClient
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 
