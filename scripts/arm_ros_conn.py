@@ -19,7 +19,7 @@ class ARMRosConn():
 	def odom_received(self, msg):
 		pos = (msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z)
 		orientation = (msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w)
-		self.tf_broadcaster.sendTransform(pos, orientation, msg.header.stamp, "base_link", "odom")
+		self.tf_broadcaster.sendTransform(pos, orientation, rospy.Time.now(), "base_link", "odom")
 
 if __name__ == '__main__':
 	ARMRosConn()
