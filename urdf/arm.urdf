@@ -42,9 +42,9 @@
 	<link name="gripper_pole1">
 		<visual>
 			<geometry>
-				<cylinder radius="0.04" length="0.055"/>
+				<cylinder radius="0.045" length="0.03"/>
 			</geometry>
-			<origin xyz="0.0275 0 0" rpy="0 1.57075 0"/>
+			<origin xyz="0.015 0 0" rpy="0 1.57075 0"/>
 			<material name="black">
 				<color rgba="0 0 0 1"/>
 			</material>
@@ -54,26 +54,29 @@
 	<link name="gripper_pole2">
 		<visual>
 			<geometry>
-				<cylinder radius="0.0" length="0.0"/>
+				<cylinder radius="0.03" length="0.015"/>
 			</geometry>
-			<origin xyz="0.0 0 0" rpy="0 0 0"/>
+			<origin xyz="0.0 0 0" rpy="1.57075 0 0"/>
+			<material name="red">
+				<color rgba="1 0 0 1"/>
+			</material>
 		</visual>
 	</link>
 
 	<link name="left_gripper">
 		<visual>
-			<origin rpy="0.0 0 0" xyz="0 0 0"/>
+			<origin xyz="0.025 0 0" rpy="-1.57075 3.1415 0"/>
 			<geometry>
-				<mesh filename="package://pr2_description/meshes/gripper_v0/l_finger.dae"/>
+				<mesh filename="package://arm_ros_conn/meshes/35978.stl" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</visual>
 	</link>
 
 	<link name="right_gripper">
 		<visual>
-			<origin rpy="-3.1415 0 0" xyz="0 0 0"/>
+			<origin xyz="0.025 0 0" rpy="1.57075 3.1415 0"/>
 			<geometry>
-				<mesh filename="package://pr2_description/meshes/gripper_v0/l_finger.dae"/>
+				<mesh filename="package://arm_ros_conn/meshes/35978.stl" scale="0.001 0.001 0.001"/>
 			</geometry>
 		</visual>
 	</link>
@@ -113,23 +116,23 @@
 		<parent link="gripper_pole1"/>
 		<child link="gripper_pole2"/>
 		<axis xyz="0 1 0"/>
-		<origin xyz="0.055 0.0 0.0" rpy="0 0 0"/>
+		<origin xyz="0.06 0.0 0.0" rpy="0 0 0"/>
 		<limit effort="1000.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.0"/>
-	</joint>
-
-	<joint name="right_gripper_joint" type="revolute">
-		<parent link="gripper_pole2"/>
-		<child link="right_gripper"/>
-		<axis xyz="0 0 -1"/>
-		<origin xyz="0 -0.01 0" rpy="0 0 0"/>
-		<limit effort="1000.0" lower="0.0" upper="0.548" velocity="1.0"/>
 	</joint>
 
 	<joint name="left_gripper_joint" type="revolute">
 		<parent link="gripper_pole2"/>
 		<child link="left_gripper"/>
 		<axis xyz="0 0 1"/>
-		<origin xyz="0 0.01 0" rpy="0 0 0" />
-		<limit effort="1000.0" lower="0.0" upper="0.548" velocity="1.0"/>
+		<origin xyz="0.02 0.01 0" rpy="0 0 0" />
+		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
+	</joint>
+
+	<joint name="right_gripper_joint" type="revolute">
+		<parent link="gripper_pole2"/>
+		<child link="right_gripper"/>
+		<axis xyz="0 0 -1"/>
+		<origin xyz="0.02 -0.01 0" rpy="0 0 0"/>
+		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
 	</joint>
 </robot>
