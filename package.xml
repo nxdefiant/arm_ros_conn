@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>arm</name>
+  <name>arm_ros_conn</name>
   <version>0.0.0</version>
   <description>The arm package</description>
 
