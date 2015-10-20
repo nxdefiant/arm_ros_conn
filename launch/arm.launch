@@ -4,5 +4,5 @@
 
 	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 
-	<node pkg="arm_ros_conn" type="arm_ros_conn.py" name="arm_ros_conn" output="screen" respawn="true"/>
+	<node pkg="arm_ros_conn" type="arm_ros_conn.py" name="arm_ros_conn" output="screen" respawn="false"/>
 </launch>
