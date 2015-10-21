@@ -85,7 +85,7 @@
 		<parent link="base_link"/>
 		<child link="link1"/>
 		<axis xyz="0 0 1"/>
-		<limit effort="1000.0" lower="0.0" upper="5.672320068981571" velocity="1.0"/>
+		<limit effort="1000.0" lower="-5.672320068981571" upper="0.0" velocity="1.0"/>
 	</joint>
 
 	<joint name="link_1_2_joint" type="continuous">
@@ -101,7 +101,7 @@
 		<child link="link3"/>
 		<axis xyz="0 0 1"/>
 		<origin xyz="0.240 0.0 0.0" rpy="0 0 0"/>
-		<limit effort="1000.0" lower="0.0" upper="3.141592653589793" velocity="1.0"/>
+		<limit effort="1000.0" lower="-3.141592653589793" upper="0.0" velocity="1.0"/>
 	</joint>
 
 	<joint name="gripper_joint_1" type="continuous">
@@ -109,7 +109,7 @@
 		<child link="gripper_pole1"/>
 		<axis xyz="1 0 0"/>
 		<origin xyz="0 0.135 0.0" rpy="1.57075 0 1.57075"/>
-		<limit effort="1000.0" lower="-0.6981317007977319" upper="7.679448708775051" velocity="1.0"/>
+		<limit effort="1000.0" lower="-7.679448708775051" upper="0.6981317007977319" velocity="1.0"/>
 	</joint>
 
 	<joint name="gripper_joint_2" type="continuous">
