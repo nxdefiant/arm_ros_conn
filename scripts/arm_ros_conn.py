@@ -11,7 +11,7 @@ from actionlib_msgs.msg import GoalStatus
 from time import sleep
 from math import *
 
-lJointNames = ["base_to_link1", "link_1_2_joint", "link_2_3_joint", "gripper_joint_1", "gripper_joint_2", "left_gripper_joint", "right_gripper_joint"]
+lJointNames = ["base_to_link1", "link_1_2_joint", "link_2_3_joint", "link_3_4_joint", "link_4_5_joint", "left_gripper_joint", "right_gripper_joint"]
 
 
 class ARMRosConn():
