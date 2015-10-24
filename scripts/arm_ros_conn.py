@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
+import sys
 import rospy
 import arm
 import actionlib
 import numpy as np
 from sensor_msgs.msg import JointState
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryActionResult, FollowJointTrajectoryActionFeedback, FollowJointTrajectoryResult
+from control_msgs.msg import GripperCommandAction
 from actionlib_msgs.msg import GoalStatus
 from time import sleep
 from math import *
 
-lJointNames = ["base_to_link1", "link_1_2_joint", "link_2_3_joint", "link_3_4_joint", "link_4_5_joint", "left_gripper_joint", "right_gripper_joint"]
+lJointNames = ["arm_base_to_link1", "link_1_2_joint", "link_2_3_joint", "link_3_4_joint", "link_4_5_joint", "left_gripper_joint", "right_gripper_joint"]
 
 
 class ARMRosConn():
@@ -30,8 +32,10 @@ class ARMRosConn():
 		arm.set_tolerance(3, 0)
 		arm.set_tolerance(5, 0)
 
-		self._as = actionlib.SimpleActionServer("arm_controller/follow_joint_trajectory", FollowJointTrajectoryAction, execute_cb=self.execute_joint_trajectory, auto_start = False)
-		self._as.start()
+		self._as_arm = actionlib.SimpleActionServer("arm_controller/follow_joint_trajectory", FollowJointTrajectoryAction, execute_cb=self.execute_joint_trajectory, auto_start = False)
+		self._as_arm.start()
+		self._as_gripper = actionlib.SimpleActionServer("gripper_controller/gripper_action", GripperCommandAction, execute_cb=self.execute_gripper_action, auto_start = False)
+		self._as_gripper.start()
 		self.pub_joint_states = rospy.Publisher("joint_states", JointState, queue_size=16)
 		self.run()
 
@@ -50,6 +54,7 @@ class ARMRosConn():
 		self.pub_joint_states.publish(joint_state)
 
 	def execute_joint_trajectory(self, goal):
+		self._result.status = FollowJointTrajectoryResult.SUCCESSFUL
 		for point in goal.trajectory.points:
 			print goal.trajectory.joint_names
 			print point.positions
@@ -60,20 +65,28 @@ class ARMRosConn():
 				point.positions[goal.trajectory.joint_names.index(lJointNames[3])],
 				point.positions[goal.trajectory.joint_names.index(lJointNames[4])],
 			]
-			arm.to_angle(0, self.speed, -lGoalPosOrdered[0])
-			arm.to_angle(1, self.speed,  lGoalPosOrdered[1])
-			arm.to_angle(2, self.speed, -lGoalPosOrdered[2])
-			arm.to_angle(3, self.speed, -lGoalPosOrdered[3])
-			arm.to_angle(4, self.speed,  lGoalPosOrdered[4])
+			try:
+				arm.to_angle(0, self.speed, -lGoalPosOrdered[0])
+				arm.to_angle(1, self.speed,  lGoalPosOrdered[1])
+				arm.to_angle(2, self.speed, -lGoalPosOrdered[2])
+				arm.to_angle(3, self.speed, -lGoalPosOrdered[3])
+				arm.to_angle(4, self.speed,  lGoalPosOrdered[4])
+			except arm.RangeError as e:
+				print >> sys.stderr, e.message
+				self._feedback.status = GoalStatus.REJECTED
+				self._as_arm.publish_feedback(self._feedback.feedback)
+				self._result.status = FollowJointTrajectoryResult.INVALID_GOAL
+				break
 
 			error = 0
 			while True:
 				error = np.array(lGoalPosOrdered) - np.array(self.lAngles[:-1])
-				if np.linalg.norm(error) < 0.01:
+				print "Error", error
+				if all(f < 0.02 for f in error):
 					break
 
-				if self._as.is_preempt_requested():
-					self._as.set_preempted()
+				if self._as_arm.is_preempt_requested():
+					self._as_arm.set_preempted()
 					break
 				sleep(0.001)
 
@@ -82,10 +95,12 @@ class ARMRosConn():
 			self._feedback.feedback.desired.positions = lGoalPosOrdered
 			self._feedback.feedback.actual.positions = self.lAngles[:-1]
 			self._feedback.feedback.error.positions = error
-			self._as.publish_feedback(self._feedback.feedback)
-		self._result.status = FollowJointTrajectoryResult.SUCCESSFUL
-		self._as.set_succeeded(self._result.result)
+			self._as_arm.publish_feedback(self._feedback.feedback)
+		self._as_arm.set_succeeded(self._result.result)
 
+
+	def execute_gripper_action(self, goal):
+		print goal
 
 if __name__ == '__main__':
 	ARMRosConn()
