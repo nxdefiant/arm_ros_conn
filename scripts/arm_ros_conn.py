@@ -8,7 +8,7 @@ import actionlib
 import numpy as np
 from sensor_msgs.msg import JointState
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryActionResult, FollowJointTrajectoryActionFeedback, FollowJointTrajectoryResult
-from control_msgs.msg import GripperCommandAction
+from control_msgs.msg import GripperCommandAction, GripperCommandActionResult, GripperCommandFeedback
 from actionlib_msgs.msg import GoalStatus
 from time import sleep
 from math import *
@@ -19,6 +19,8 @@ lJointNames = ["arm_base_to_link1", "link_1_2_joint", "link_2_3_joint", "link_3_
 class ARMRosConn():
 	_feedback = FollowJointTrajectoryActionFeedback()
 	_result = FollowJointTrajectoryActionResult()
+	_gripper_feedback = GripperCommandFeedback()
+	_gripper_result = GripperCommandActionResult()
 
 	def __init__(self):
 		rospy.init_node('arm')
@@ -49,8 +51,8 @@ class ARMRosConn():
 		joint_state = JointState()
 		joint_state.header.stamp = rospy.Time.now()
 		joint_state.name = lJointNames
-		self.lAngles = [-arm.get_angle(0), arm.get_angle(1), -arm.get_angle(2), -arm.get_angle(3), arm.get_angle(4), arm.get_angle(5)]
-		joint_state.position = self.lAngles[:-1] + [0.175-self.lAngles[-1]/2, 0.175-self.lAngles[-1]/2]
+		self.lAngles = [-arm.get_angle(0), arm.get_angle(1), -arm.get_angle(2), -arm.get_angle(3), arm.get_angle(4), 0.35-arm.get_angle(5)]
+		joint_state.position = self.lAngles[:-1] + [self.lAngles[-1], self.lAngles[-1]]
 		self.pub_joint_states.publish(joint_state)
 
 	def execute_joint_trajectory(self, goal):
@@ -82,7 +84,8 @@ class ARMRosConn():
 			while True:
 				error = np.array(lGoalPosOrdered) - np.array(self.lAngles[:-1])
 				print "Error", error
-				if all(f < 0.02 for f in error):
+				if all(abs(f) < 0.02 for f in error):
+					print "Position reached"
 					break
 
 				if self._as_arm.is_preempt_requested():
@@ -100,7 +103,25 @@ class ARMRosConn():
 
 
 	def execute_gripper_action(self, goal):
-		print goal
+		arm.to_angle(5, self.speed, 0.35-goal.command.position)
+		while True:
+			error = goal.command.position - self.lAngles[-1]
+			if abs(error) < 0.02:
+				break
+
+			self._gripper_feedback.position = self.lAngles[-1]
+			self._gripper_feedback.stalled = False
+			self._gripper_feedback.reached_goal = False
+
+			if self._as_gripper.is_preempt_requested():
+				self._as_gripper.set_preempted()
+				break
+			sleep(0.001)
+		self._gripper_result.status = GoalStatus.SUCCEEDED
+		self._gripper_result.result.position = goal.command.position
+		self._gripper_result.result.stalled = False
+		self._gripper_result.result.reached_goal = True
+		self._as_gripper.set_succeeded(self._gripper_result.result)
 
 if __name__ == '__main__':
 	ARMRosConn()
