@@ -6,6 +6,8 @@ import rospy
 import arm
 import actionlib
 import numpy as np
+from dynamic_reconfigure.server import Server
+from arm_ros_conn.cfg import ArmConfig
 from sensor_msgs.msg import JointState
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryActionResult, FollowJointTrajectoryActionFeedback, FollowJointTrajectoryResult
 from control_msgs.msg import GripperCommandAction, GripperCommandActionResult, GripperCommandFeedback
@@ -25,7 +27,7 @@ class ARMRosConn():
 	def __init__(self):
 		rospy.init_node('arm')
 
-		self.speed = 220
+		self.lSpeeds = [220] * 6
 		self.lAngles = [0] * 6
 		arm.switch(0)
 		arm.switch(2)
@@ -39,6 +41,7 @@ class ARMRosConn():
 		self._as_gripper = actionlib.SimpleActionServer("gripper_controller/gripper_action", GripperCommandAction, execute_cb=self.execute_gripper_action, auto_start = False)
 		self._as_gripper.start()
 		self.pub_joint_states = rospy.Publisher("joint_states", JointState, queue_size=16)
+		self.dyn_conf = Server(ArmConfig, self.execute_dyn_reconf)
 		self.run()
 
 	def run(self):
@@ -46,6 +49,10 @@ class ARMRosConn():
 		while not rospy.is_shutdown():
 			self.publish_joint_states()
 			rate.sleep()
+	
+	def execute_dyn_reconf(self, config, level):
+		self.lSpeeds = [config["speed_1"], config["speed_2"], config["speed_3"], config["speed_4"], config["speed_5"], config["speed_6"]]
+		return config
 	
 	def publish_joint_states(self):
 		joint_state = JointState()
@@ -68,11 +75,11 @@ class ARMRosConn():
 				point.positions[goal.trajectory.joint_names.index(lJointNames[4])],
 			]
 			try:
-				arm.to_angle(0, self.speed, -lGoalPosOrdered[0])
-				arm.to_angle(1, self.speed,  lGoalPosOrdered[1])
-				arm.to_angle(2, self.speed, -lGoalPosOrdered[2])
-				arm.to_angle(3, self.speed, -lGoalPosOrdered[3])
-				arm.to_angle(4, self.speed,  lGoalPosOrdered[4])
+				arm.to_angle(0, self.lSpeeds[0], -lGoalPosOrdered[0])
+				arm.to_angle(1, self.lSpeeds[1],  lGoalPosOrdered[1])
+				arm.to_angle(2, self.lSpeeds[2], -lGoalPosOrdered[2])
+				arm.to_angle(3, self.lSpeeds[3], -lGoalPosOrdered[3])
+				arm.to_angle(4, self.lSpeeds[4],  lGoalPosOrdered[4])
 			except arm.RangeError as e:
 				print >> sys.stderr, e.message
 				self._feedback.status = GoalStatus.REJECTED
@@ -103,7 +110,7 @@ class ARMRosConn():
 
 
 	def execute_gripper_action(self, goal):
-		arm.to_angle(5, self.speed, 0.35-goal.command.position)
+		arm.to_angle(5, self.lSpeeds[5], 0.35-goal.command.position)
 		while True:
 			error = goal.command.position - self.lAngles[-1]
 			if abs(error) < 0.02:
