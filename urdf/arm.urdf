@@ -3,7 +3,7 @@
 	<link name="base_link">
 	</link>
 
-	<link name="arm_base">
+	<link name="plate">
 		<visual>
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/32985.stl"/>
@@ -14,10 +14,13 @@
 		</visual>
 	</link>
 
+	<link name="arm_base">
+	</link>
+
 	<link name="link1">
 		<visual>
 			<geometry>
-				<box size="0.06 0.03 0.123"/>
+				<mesh filename="package://arm_ros_conn/meshes/link1.stl"/>
 			</geometry>
 			<origin xyz="0 0 0.0615"/>
 			<material name="grey">
@@ -29,9 +32,9 @@
 	<link name="link2">
 		<visual>
 			<geometry>
-				<box size="0.240 0.06 0.03"/>
+				<mesh filename="package://arm_ros_conn/meshes/link2.stl"/>
 			</geometry>
-			<origin xyz="0.120 0 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.120" rpy="0 0 0"/>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1"/>
 			</material>
@@ -41,9 +44,9 @@
 	<link name="link3">
 		<visual>
 			<geometry>
-				<box size="0.06 0.135 0.03"/>
+				<mesh filename="package://arm_ros_conn/meshes/link3.stl"/>
 			</geometry>
-			<origin xyz="0.0 0.0675 0.0" rpy="0 0 0"/>
+			<origin xyz="0 0 0.0675" rpy="0 0 0"/>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1"/>
 			</material>
@@ -53,9 +56,9 @@
 	<link name="link4">
 		<visual>
 			<geometry>
-				<cylinder radius="0.045" length="0.03"/>
+				<mesh filename="package://arm_ros_conn/meshes/link4.stl"/>
 			</geometry>
-			<origin xyz="0.015 0 0" rpy="0 1.57075 0"/>
+			<origin xyz="0 0 0.015" rpy="0 0 0"/>
 			<material name="black">
 				<color rgba="0 0 0 1"/>
 			</material>
@@ -67,7 +70,7 @@
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/31019.stl"/>
 			</geometry>
-			<origin xyz="0.0 0 0" rpy="1.57075 0 0"/>
+			<origin xyz="0.0 0 0" rpy="1.5708 0 0"/>
 			<material name="red">
 				<color rgba="1 0 0 1"/>
 			</material>
@@ -75,6 +78,9 @@
 	</link>
 
 	<link name="gripper_pole">
+	</link>
+
+	<link name="gripper_center">
 	</link>
 
 	<link name="left_gripper">
@@ -101,41 +107,46 @@
 		</visual>
 	</link>
 
-	<joint name="base_link_to_arm_base" type="fixed">
+	<joint name="base_link_to_plate" type="fixed">
 		<parent link="base_link"/>
-		<child link="arm_base"/>
+		<child link="plate"/>
 		<origin xyz="0 0 0.00375"/>
+	</joint>
+
+	<joint name="plate_to_arm_base" type="fixed">
+		<parent link="plate"/>
+		<child link="arm_base"/>
+		<origin xyz="0 0.099 0"/>
 	</joint>
 
 	<joint name="arm_base_to_link1" type="revolute">
 		<parent link="arm_base"/>
 		<child link="link1"/>
 		<axis xyz="0 0 1"/>
-		<origin xyz="0 0.099 0"/>
 		<limit effort="1000.0" lower="-5.672320068981571" upper="0.0" velocity="1.0"/>
 	</joint>
 
 	<joint name="link_1_2_joint" type="revolute">
 		<parent link="link1"/>
 		<child link="link2"/>
-		<axis xyz="0 0 1"/>
-		<origin xyz="0.0 0.0 0.123" rpy="1.57075 0 0"/>
-		<limit effort="1000.0" lower="0.15045941827537324" upper="3.6110260386089577" velocity="1.0"/>
+		<axis xyz="0 1 0"/>
+		<origin xyz="0.0 0.0 0.123" rpy="0 0 0"/>
+		<limit effort="1000.0" lower="-2.0402" upper="1.4203" velocity="1.0"/>
 	</joint>
 
 	<joint name="link_2_3_joint" type="revolute">
 		<parent link="link2"/>
 		<child link="link3"/>
-		<axis xyz="0 0 1"/>
-		<origin xyz="0.240 0.0 0.0" rpy="0 0 0"/>
-		<limit effort="1000.0" lower="-3.141592653589793" upper="0.0" velocity="1.0"/>
+		<axis xyz="0 1 0"/>
+		<origin xyz="0 0 0.240" rpy="0 0 0"/>
+		<limit effort="1000.0" lower="-1.5708" upper="1.5708" velocity="1.0"/>
 	</joint>
 
 	<joint name="link_3_4_joint" type="revolute">
 		<parent link="link3"/>
 		<child link="link4"/>
-		<axis xyz="1 0 0"/>
-		<origin xyz="0 0.135 0.0" rpy="1.57075 0 1.57075"/>
+		<axis xyz="0 0 1"/>
+		<origin xyz="0 0 0.135" rpy="0 0 0"/>
 		<limit effort="1000.0" lower="-5.4978" upper="0.15708" velocity="1.0"/>
 	</joint>
 
@@ -143,7 +154,7 @@
 		<parent link="link4"/>
 		<child link="link5"/>
 		<axis xyz="0 1 0"/>
-		<origin xyz="0.06 0.0 0.0" rpy="0 0 0"/>
+		<origin xyz="0 0 0.06" rpy="0 0 0"/>
 		<limit effort="1000.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.0"/>
 	</joint>
 
@@ -152,11 +163,17 @@
 		<child link="gripper_pole"/>
 	</joint>
 
+	<joint name="gripper_center_joint" type="fixed">
+		<parent link="gripper_pole"/>
+		<child link="gripper_center"/>
+		<origin xyz="0.0 0.0 0.1" rpy="0 0 0" />
+	</joint>
+
 	<joint name="left_gripper_joint" type="revolute">
 		<parent link="gripper_pole"/>
 		<child link="left_gripper"/>
 		<axis xyz="0 0 1"/>
-		<origin xyz="0.02 0.01 0" rpy="0 0 0" />
+		<origin xyz="0.0 0.01 0.02" rpy="0 -1.5708 0" />
 		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
 	</joint>
 
@@ -164,7 +181,7 @@
 		<parent link="gripper_pole"/>
 		<child link="right_gripper"/>
 		<axis xyz="0 0 -1"/>
-		<origin xyz="0.02 -0.01 0" rpy="0 0 0"/>
+		<origin xyz="0.0 -0.01 0.02" rpy="0 -1.5708 0"/>
 		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
 	</joint>
 </robot>
