@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+
+<!--
+For IKFast:
+- All rotation about Z-Axis
+- Gripper base at offset from last link
+- Gripper base points to Z-Direction
+-->
+
 <robot name="arm">
 	<link name="base_link">
 	</link>
@@ -34,7 +42,7 @@
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/link2.stl"/>
 			</geometry>
-			<origin xyz="0 0 0.120" rpy="0 0 0"/>
+			<origin xyz="0.120 0 0" rpy="1.5708 0 1.5708"/>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1"/>
 			</material>
@@ -46,7 +54,7 @@
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/link3.stl"/>
 			</geometry>
-			<origin xyz="0 0 0.0675" rpy="0 0 0"/>
+			<origin xyz="0 0.0675 0" rpy="1.5708 0 0"/>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1"/>
 			</material>
@@ -70,7 +78,7 @@
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/31019.stl"/>
 			</geometry>
-			<origin xyz="0.0 0 0" rpy="1.5708 0 0"/>
+			<origin xyz="0.0 0 0" rpy="0 0 0"/>
 			<material name="red">
 				<color rgba="1 0 0 1"/>
 			</material>
@@ -85,7 +93,7 @@
 
 	<link name="left_gripper">
 		<visual>
-			<origin xyz="0.025 0 0" rpy="-1.57075 3.1415 0"/>
+			<origin xyz="0.025 0 0" rpy="-1.5708 3.1416 0"/>
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/35978.stl" scale="0.001 0.001 0.001"/>
 			</geometry>
@@ -97,7 +105,7 @@
 
 	<link name="right_gripper">
 		<visual>
-			<origin xyz="0.025 0 0" rpy="1.57075 3.1415 0"/>
+			<origin xyz="0.025 0 0" rpy="-1.5708 3.1416 0"/>
 			<geometry>
 				<mesh filename="package://arm_ros_conn/meshes/35978.stl" scale="0.001 0.001 0.001"/>
 			</geometry>
@@ -123,65 +131,66 @@
 		<parent link="arm_base"/>
 		<child link="link1"/>
 		<axis xyz="0 0 -1"/>
-		<limit effort="1000.0" lower="0.0" upper="5.672320068981571" velocity="1.0"/>
+		<limit effort="1.0" lower="0.0" upper="5.672320068981571" velocity="1.0"/>
 	</joint>
 
 	<joint name="link2_joint" type="revolute">
 		<parent link="link1"/>
 		<child link="link2"/>
-		<axis xyz="0 -1 0"/>
-		<origin xyz="0.0 0.0 0.123" rpy="0 1.5708 0"/>
-		<limit effort="1000.0" lower="0.1505" upper="3.611" velocity="1.0"/>
+		<axis xyz="0 0 1"/>
+		<origin xyz="0.0 0.0 0.123" rpy="1.5708 0 0"/>
+		<limit effort="1.0" lower="0.1505" upper="3.611" velocity="1.0"/>
 	</joint>
 
 	<joint name="link3_joint" type="revolute">
 		<parent link="link2"/>
 		<child link="link3"/>
-		<axis xyz="0 1 0"/>
-		<origin xyz="0 0 0.240" rpy="0 -1.5708 0"/>
-		<limit effort="1000.0" lower="0" upper="3.1416" velocity="1.0"/>
+		<axis xyz="0 0 -1"/>
+		<origin xyz="0.240 0 0" rpy="0 0 0"/>
+		<limit effort="1.0" lower="0" upper="3.1416" velocity="1.0"/>
 	</joint>
 
 	<joint name="link4_joint" type="revolute">
 		<parent link="link3"/>
 		<child link="link4"/>
 		<axis xyz="0 0 -1"/>
-		<origin xyz="0 0 0.135" rpy="0 0 0"/>
-		<limit effort="1000.0" lower="-0.15708" upper="5.4978" velocity="1.0"/>
+		<origin xyz="0 0.135 0" rpy="-1.5708 0 0"/>
+		<limit effort="1.0" lower="-0.15708" upper="5.4978" velocity="1.0"/>
 	</joint>
 
 	<joint name="link5_joint" type="revolute">
 		<parent link="link4"/>
 		<child link="link5"/>
-		<axis xyz="0 -1 0"/>
-		<origin xyz="0 0 0.06" rpy="0 0 0"/>
-		<limit effort="1000.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.0"/>
+		<axis xyz="0 0 1"/>
+		<origin xyz="0 0 0.06" rpy="1.5708 0 0"/>
+		<limit effort="1.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.0"/>
 	</joint>
 
 	<joint name="gripper_pole_joint" type="fixed">
 		<parent link="link5"/>
 		<child link="gripper_pole"/>
+		<origin xyz="0 0.02275 0" rpy="1.5708 0 1.5708"/>
 	</joint>
 
 	<joint name="gripper_center_joint" type="fixed">
 		<parent link="gripper_pole"/>
 		<child link="gripper_center"/>
-		<origin xyz="0.0 0.0 0.1" rpy="0 0 0" />
+		<origin xyz="0.08 0 0" rpy="0 0 0"/>
 	</joint>
 
 	<joint name="left_gripper_joint" type="revolute">
 		<parent link="gripper_pole"/>
 		<child link="left_gripper"/>
 		<axis xyz="0 0 1"/>
-		<origin xyz="0.0 0.01 0.02" rpy="0 -1.5708 0" />
-		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
+		<origin xyz="0 0.015 0" rpy="0 0 0"/>
+		<limit effort="1.0" lower="0.0" upper="0.35" velocity="1.0"/>
 	</joint>
 
 	<joint name="right_gripper_joint" type="revolute">
 		<parent link="gripper_pole"/>
 		<child link="right_gripper"/>
-		<axis xyz="0 0 -1"/>
-		<origin xyz="0.0 -0.01 0.02" rpy="0 -1.5708 0"/>
-		<limit effort="1000.0" lower="0.0" upper="0.35" velocity="1.0"/>
+		<axis xyz="0 0 1"/>
+		<origin xyz="0 -0.015 0" rpy="3.1416 0 0"/>
+		<limit effort="1.0" lower="0.0" upper="0.35" velocity="1.0"/>
 	</joint>
 </robot>
