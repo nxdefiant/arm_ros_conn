@@ -15,7 +15,7 @@ from actionlib_msgs.msg import GoalStatus
 from time import sleep
 from math import *
 
-lJointNames = ["arm_base_to_link1", "link_1_2_joint", "link_2_3_joint", "link_3_4_joint", "link_4_5_joint", "left_gripper_joint", "right_gripper_joint"]
+lJointNames = ["link1_joint", "link2_joint", "link3_joint", "link4_joint", "link5_joint", "left_gripper_joint", "right_gripper_joint"]
 
 
 class ARMRosConn():
@@ -58,7 +58,7 @@ class ARMRosConn():
 		joint_state = JointState()
 		joint_state.header.stamp = rospy.Time.now()
 		joint_state.name = lJointNames
-		self.lAngles = [-arm.get_angle(0), arm.get_angle(1), -arm.get_angle(2), -arm.get_angle(3), arm.get_angle(4), 0.35-arm.get_angle(5)]
+		self.lAngles = [arm.get_angle(0), arm.get_angle(1), arm.get_angle(2), arm.get_angle(3), arm.get_angle(4), 0.35-arm.get_angle(5)]
 		joint_state.position = self.lAngles[:-1] + [self.lAngles[-1], self.lAngles[-1]]
 		self.pub_joint_states.publish(joint_state)
 
@@ -75,11 +75,11 @@ class ARMRosConn():
 				point.positions[goal.trajectory.joint_names.index(lJointNames[4])],
 			]
 			try:
-				arm.to_angle(0, self.lSpeeds[0], -lGoalPosOrdered[0])
-				arm.to_angle(1, self.lSpeeds[1],  lGoalPosOrdered[1])
-				arm.to_angle(2, self.lSpeeds[2], -lGoalPosOrdered[2])
-				arm.to_angle(3, self.lSpeeds[3], -lGoalPosOrdered[3])
-				arm.to_angle(4, self.lSpeeds[4],  lGoalPosOrdered[4])
+				arm.to_angle(0, self.lSpeeds[0], lGoalPosOrdered[0])
+				arm.to_angle(1, self.lSpeeds[1], lGoalPosOrdered[1])
+				arm.to_angle(2, self.lSpeeds[2], lGoalPosOrdered[2])
+				arm.to_angle(3, self.lSpeeds[3], lGoalPosOrdered[3])
+				arm.to_angle(4, self.lSpeeds[4], lGoalPosOrdered[4])
 			except arm.RangeError as e:
 				print >> sys.stderr, e.message
 				self._feedback.status = GoalStatus.REJECTED
@@ -91,16 +91,17 @@ class ARMRosConn():
 			while True:
 				error = np.array(lGoalPosOrdered) - np.array(self.lAngles[:-1])
 				print "Error", error
-				if all(abs(f) < 0.02 for f in error):
+				if all(abs(f) < 0.15 for f in error):
 					print "Position reached"
+					self._feedback.status = GoalStatus.SUCCEEDED
 					break
 
 				if self._as_arm.is_preempt_requested():
+					self._feedback.status = GoalStatus.PREEMPTING
 					self._as_arm.set_preempted()
 					break
 				sleep(0.001)
 
-			self._feedback.status = GoalStatus.SUCCEEDED
 			self._feedback.feedback.joint_names = lJointNames[:-1]
 			self._feedback.feedback.desired.positions = lGoalPosOrdered
 			self._feedback.feedback.actual.positions = self.lAngles[:-1]
