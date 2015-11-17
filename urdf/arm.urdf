@@ -131,7 +131,7 @@ For IKFast:
 		<parent link="arm_base"/>
 		<child link="link1"/>
 		<axis xyz="0 0 -1"/>
-		<limit effort="1.0" lower="0.0" upper="5.672320068981571" velocity="1.0"/>
+		<limit effort="1.0" lower="0.0" upper="5.672320068981571" velocity="0.1"/>
 	</joint>
 
 	<joint name="link2_joint" type="revolute">
@@ -139,7 +139,7 @@ For IKFast:
 		<child link="link2"/>
 		<axis xyz="0 0 1"/>
 		<origin xyz="0.0 0.0 0.123" rpy="1.5708 0 0"/>
-		<limit effort="1.0" lower="0.1505" upper="3.611" velocity="1.0"/>
+		<limit effort="1.0" lower="0.1505" upper="3.611" velocity="0.1"/>
 	</joint>
 
 	<joint name="link3_joint" type="revolute">
@@ -147,7 +147,7 @@ For IKFast:
 		<child link="link3"/>
 		<axis xyz="0 0 -1"/>
 		<origin xyz="0.240 0 0" rpy="0 0 0"/>
-		<limit effort="1.0" lower="0" upper="3.1416" velocity="1.0"/>
+		<limit effort="1.0" lower="0" upper="3.1416" velocity="0.1"/>
 	</joint>
 
 	<joint name="link4_joint" type="revolute">
@@ -155,7 +155,7 @@ For IKFast:
 		<child link="link4"/>
 		<axis xyz="0 0 -1"/>
 		<origin xyz="0 0.135 0" rpy="-1.5708 0 0"/>
-		<limit effort="1.0" lower="-0.15708" upper="5.4978" velocity="1.0"/>
+		<limit effort="1.0" lower="-0.15708" upper="5.4978" velocity="0.1"/>
 	</joint>
 
 	<joint name="link5_joint" type="revolute">
@@ -163,7 +163,7 @@ For IKFast:
 		<child link="link5"/>
 		<axis xyz="0 0 1"/>
 		<origin xyz="0 0 0.06" rpy="1.5708 0 0"/>
-		<limit effort="1.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.0"/>
+		<limit effort="1.0" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="0.1"/>
 	</joint>
 
 	<joint name="gripper_pole_joint" type="fixed">
@@ -183,7 +183,7 @@ For IKFast:
 		<child link="left_gripper"/>
 		<axis xyz="0 0 1"/>
 		<origin xyz="0 0.015 0" rpy="0 0 0"/>
-		<limit effort="1.0" lower="0.0" upper="0.35" velocity="1.0"/>
+		<limit effort="1.0" lower="0.0" upper="0.35" velocity="0.1"/>
 	</joint>
 
 	<joint name="right_gripper_joint" type="revolute">
@@ -191,6 +191,6 @@ For IKFast:
 		<child link="right_gripper"/>
 		<axis xyz="0 0 1"/>
 		<origin xyz="0 -0.015 0" rpy="3.1416 0 0"/>
-		<limit effort="1.0" lower="0.0" upper="0.35" velocity="1.0"/>
+		<limit effort="1.0" lower="0.0" upper="0.35" velocity="0.1"/>
 	</joint>
 </robot>
