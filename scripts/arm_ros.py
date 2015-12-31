@@ -3,7 +3,7 @@
 
 import sys
 import rospy
-import arm
+import arm # interface to hardware
 import actionlib
 import numpy as np
 from dynamic_reconfigure.server import Server
@@ -27,12 +27,15 @@ class ARMRosConn():
 	def __init__(self):
 		rospy.init_node('arm')
 
-		self.lSpeeds = [220] * 6
-		self.lAngles = [0] * 6
-		arm.switch(0)
+		self.lSpeeds = [220] * 6 # default pwm speed for all 6 motors
+		self.lAngles = [0] * 6 # current angle for all 6 motors, needed to calculate current error
+		# switch forward/reverse direction on motors
+		arm.switch(0) 
 		arm.switch(2)
+		# these motors do not have anquadrature encoder
 		arm.set_hall_mode(3, 0)
 		arm.set_hall_mode(5, 0)
+		# lower position tolerance of these motors
 		arm.set_tolerance(3, 0)
 		arm.set_tolerance(5, 0)
 
@@ -58,6 +61,7 @@ class ARMRosConn():
 		joint_state = JointState()
 		joint_state.header.stamp = rospy.Time.now()
 		joint_state.name = lJointNames
+		# position of last motor (gripper) needs to be adjusted by 0.35, also value is expected two times: For right and left gripper joint.
 		self.lAngles = [arm.get_angle(0), arm.get_angle(1), arm.get_angle(2), arm.get_angle(3), arm.get_angle(4), 0.35-arm.get_angle(5)]
 		joint_state.position = self.lAngles[:-1] + [self.lAngles[-1], self.lAngles[-1]]
 		self.pub_joint_states.publish(joint_state)
@@ -67,6 +71,7 @@ class ARMRosConn():
 		for point in goal.trajectory.points:
 			print goal.trajectory.joint_names
 			print point.positions
+			# get new desired joint values in order from link1_joint to link5_joint
 			lGoalPosOrdered = [
 				point.positions[goal.trajectory.joint_names.index(lJointNames[0])],
 				point.positions[goal.trajectory.joint_names.index(lJointNames[1])],
@@ -75,56 +80,68 @@ class ARMRosConn():
 				point.positions[goal.trajectory.joint_names.index(lJointNames[4])],
 			]
 			try:
+				# commit new values to hardware
 				arm.to_angle(0, self.lSpeeds[0], lGoalPosOrdered[0])
 				arm.to_angle(1, self.lSpeeds[1], lGoalPosOrdered[1])
 				arm.to_angle(2, self.lSpeeds[2], lGoalPosOrdered[2])
 				arm.to_angle(3, self.lSpeeds[3], lGoalPosOrdered[3])
 				arm.to_angle(4, self.lSpeeds[4], lGoalPosOrdered[4])
 			except arm.RangeError as e:
+				# reject if position is impossible for the hardware to reach
 				print >> sys.stderr, e.message
 				self._feedback.status = GoalStatus.REJECTED
 				self._as_arm.publish_feedback(self._feedback.feedback)
 				self._result.status = FollowJointTrajectoryResult.INVALID_GOAL
 				break
 
+			# publish current position error while driving to position
 			error = 0
 			while True:
-				error = np.array(lGoalPosOrdered) - np.array(self.lAngles[:-1])
+				error = np.array(lGoalPosOrdered) - np.array(self.lAngles[:-1]) # error = desired - current
 				print "Error", error
-				if all(abs(f) < 0.15 for f in error):
+				# Position reached, done
+				if all(abs(f) < 0.15 for f in error): # allow a tiny tolerance and continue with next goal
 					print "Position reached"
 					self._feedback.status = GoalStatus.SUCCEEDED
 					break
 
+				# Cancel if requested
 				if self._as_arm.is_preempt_requested():
 					self._feedback.status = GoalStatus.PREEMPTING
 					self._as_arm.set_preempted()
 					break
 				sleep(0.001)
 
+			# Give feedback to either canceled or current position reached
 			self._feedback.feedback.joint_names = lJointNames[:-1]
 			self._feedback.feedback.desired.positions = lGoalPosOrdered
 			self._feedback.feedback.actual.positions = self.lAngles[:-1]
 			self._feedback.feedback.error.positions = error
 			self._as_arm.publish_feedback(self._feedback.feedback)
+
 		self._as_arm.set_succeeded(self._result.result)
 
 
 	def execute_gripper_action(self, goal):
+		# adjust position and commit to hardware
 		arm.to_angle(5, self.lSpeeds[5], 0.35-goal.command.position)
 		while True:
-			error = goal.command.position - self.lAngles[-1]
-			if abs(error) < 0.02:
+			error = goal.command.position - self.lAngles[-1] # error = desired - current
+			if abs(error) < 0.02: # tolerance for position
 				break
 
+			# Give feedback
 			self._gripper_feedback.position = self.lAngles[-1]
 			self._gripper_feedback.stalled = False
 			self._gripper_feedback.reached_goal = False
 
+			# Cancel if requested
 			if self._as_gripper.is_preempt_requested():
 				self._as_gripper.set_preempted()
 				break
 			sleep(0.001)
+
+		# Done, either canceled or position reached
 		self._gripper_result.status = GoalStatus.SUCCEEDED
 		self._gripper_result.result.position = goal.command.position
 		self._gripper_result.result.stalled = False
