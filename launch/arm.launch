@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-	<param name="robot_description" textfile="$(find arm_ros_conn)/urdf/arm.urdf" />
-
-	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
-
-	<node pkg="arm_ros_conn" type="arm_ros.py" name="arm_ros" output="screen" respawn="false"/>
-</launch>
